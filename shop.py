@@ -424,7 +424,7 @@ class shopjnp:
             raise Exception('查找uid表发生错误')
 sv = Service('q2商店')
 
-@sv.on_fullmatch(('旧道具商店'))
+@sv.on_fullmatch(('旧道具商店'))     #在一次大更新前使用的旧商店，代码不想优化了就在这里当纪念了
 async def shop(bot,ev):
     ck = chouka()
     shop = shangdian()
@@ -450,7 +450,7 @@ async def shop(bot,ev):
 <买[物品名][数量]个>
 <使用道具 [道具名]>\n<我的卡>''')
 
-@sv.on_fullmatch(('道具商店 生鲜'))
+@sv.on_fullmatch(('道具商店 生鲜'))   #这里本来打算做一个虚拟人生的大玩法，累了
 async def shop(bot,ev):
     ck = chouka()
     shop = shopnew()
@@ -469,7 +469,7 @@ async def shop(bot,ev):
 <使用 [道具名]>
 <我的卡>''')
 
-@sv.on_fullmatch(('纪念品商店'))
+@sv.on_fullmatch(('纪念品商店'))     #我所在的群里有些特殊的群会做一些活动，因此才有了这个纪念品商店
 async def shop(bot,ev):
     shop = shopjnp()
     uid = ev.user_id
@@ -478,23 +478,23 @@ async def shop(bot,ev):
 <获取[物品名]>
 <纪念品背包>''')
 
-@sv.on_rex(r'^获取(2022小彩旗|亲手做的烤羊腿|3|4)$')
+@sv.on_rex(r'^获取(2022小彩旗|某人亲手做的烤羊腿|3|4)$')      #如果觉得这个不是很需要，可以删了这些
 async def buy(bot, ev: CQEvent):
     uid = ev.user_id
     shop = shopjnp()
     match = (ev['match'])
     buy = match.group(1)
     if buy == '2022小彩旗':
-        shop._set_num(0,uid,20221001,1)
-        await bot.send(ev,'获取完成，使用<纪念品背包>查看')
-    if buy == '亲手做的烤羊腿':
+        #shop._set_num(0,uid,20221001,1)
+        await bot.send(ev,'来迟了，小彩旗已经拿完了~')
+    if buy == '某人亲手做的烤羊腿':
         #shop._set_num(0,uid,20221002,1)
         await bot.send(ev,'来迟了，羊腿已经分完了~')
 
 jnp = {20220910:'2022喵喵口味月饼',20221001:'2022小彩旗',20221002:'神秘的烤羊腿'}
 jnp_id = [20220910,20221001,20221002]
 
-@sv.on_fullmatch(('纪念品背包'))
+@sv.on_fullmatch(('纪念品背包'))     #我也很好奇当初为什么要做一个纪念品商店呢？唉
 async def shop(bot,ev):
     uid = ev.user_id
     shop = shopjnp()
@@ -509,7 +509,7 @@ async def shop(bot,ev):
 
     
 
-@sv.on_fullmatch(('道具商店 饮料'))
+@sv.on_fullmatch(('道具商店 饮料'))   #同上面的生鲜商店
 async def shop(bot,ev):
     ck = chouka()
     shop = shopnew()
@@ -523,7 +523,7 @@ async def shop(bot,ev):
 shop_yule = {100000001000:'钥匙',100000001001:'命悬一线武器箱',100000001002:'梦魇武器箱'}
 arc_shop_yule = {'钥匙':100000001000,'命悬一线武器箱':100000001001,'梦魇武器箱':100000001002}
 
-@sv.on_fullmatch(('道具商店 娱乐'))
+@sv.on_fullmatch(('道具商店 娱乐'))   #这里是csgo开箱玩法的商店，和功能 csgo开箱 联动
 async def shop(bot,ev):
     ck = chouka()
     shop = shopnew()
@@ -549,10 +549,13 @@ async def buy(bot, ev: CQEvent):
     num = int(match.group(2))
     if buy =='钥匙':
         shop_id = 100000001000
-    if buy =='命悬一线武器箱':
+        shop._set_sysnum(0,0,shop_id,380) #价格在这里设置（临时写的，在下一次大更新的时候会写定时更变价格代码）
+    if buy =='命悬一线武器箱':                 #2022年12月3日01:10上传github记：没有大更新了，这里的代码就这样吧....
         shop_id = 100000001001
+        shop._set_sysnum(0,0,shop_id,50) 
     if buy == '梦魇武器箱':
         shop_id = 100000001002
+        shop._set_sysnum(0,0,shop_id,190) 
 
     shijia1 = shop._get_sysnum(0,0,shop_id)
     shop1 = shop._get_sysnum(0,1,shop_id)
@@ -569,7 +572,7 @@ async def buy(bot, ev: CQEvent):
 
 
 
-@sv.on_rex(r'^买(一眼看穿|暗中调换|再来两戳|精元碎片)(.*)个$')
+@sv.on_rex(r'^买(一眼看穿|暗中调换|再来两戳|精元碎片)(.*)个$')    #这里是旧商店的代码，并不想优化了（可以很明显的看出上面csgo的新代码多简洁啊~
 async def buy(bot, ev: CQEvent):
     ck = chouka()
     shop = shangdian()
@@ -640,9 +643,10 @@ async def buy(bot, ev: CQEvent):
         ck._add_shitou(100,uid,num3)
         await bot.finish(ev,'買い物が終わった',at_sender=True)
 
-@sv.scheduled_job('cron', hour ='5',)
+@sv.scheduled_job('cron', hour ='5',)   #每天5点准时补货
 async def clock():
     shop = shangdian()
+    shopnew = shopnew()
     add1 = random.randint(1,7)
     add2 = random.randint(2,8)
     #add3 = random.randint(2,5)
@@ -651,6 +655,10 @@ async def clock():
     shop._add_jishu(1,2,add2)
     #shop._add_jishu(1,3,add3)
     shop._add_jishu(1,4,add4)
+    #下面是csgo那几个东西的进货，也是在2022年12月3日传github时加的...
+    shopnew._add_sysnum(0,1,100000001000,add2)
+    shopnew._add_sysnum(0,1,100000001001,add1)
+    shopnew._add_sysnum(0,1,100000001002,add1)
     print('==============商店补货完成！================')
 
 
@@ -680,7 +688,7 @@ async def gacha_cangku(bot, ev: CQEvent):
 
     await bot.send(ev,msg,at_sender=True)
 
-@sv.on_fullmatch(('出售再来一井'))
+@sv.on_fullmatch(('出售再来一井'))    #怀念旧功能公主连结抽卡所保留的指令，本来在大更新后删除的
 async def buy(bot, ev: CQEvent):
     ck = chouka()
     shop = shangdian()
