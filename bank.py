@@ -142,20 +142,19 @@ async def jie(bot,ev:CQEvent):
     num2 = int(match.group(1))
     if num2 > num:
         await bot.finish(ev,'bank low money!',at_sender=True)
-    cun = ck._get_shitou(1,uid)
-    jie = ck._get_shitou(2,uid)
+    jie = ck._get_shitou(2,uid) #获取玩家已经从银行借了的石头数量
     xz_num = 1500       #这里控制玩家可借取石头的总数
-    xz_num = round(xz_num,0)
-    if xz_num < jie or num2 > xz_num:
+    xz_num -= jie   #减去已借数量
+    if num2 > xz_num:   
         await bot.finish(ev,'不要借的太多...人...人家怕你还不上嘛！')
-    ck._reduce_shitou(0,0,num2)
-    ck._add_shitou(0,uid,num2)
-    ck._add_shitou(2,uid,num2)
-    num1 = ck._get_shitou(2,uid)
-    num = ck._get_shitou(0,uid)
+    ck._reduce_shitou(0,0,num2) #扣除银行的喵喵石头
+    ck._add_shitou(0,uid,num2)  #增加玩家的喵喵石头
+    ck._add_shitou(2,uid,num2)  #增加玩家的负债
+    num1 = ck._get_shitou(2,uid)    #获取玩家当前负债值
+    num = ck._get_shitou(0,uid)     #获取玩家的喵喵石头数量
     await bot.send(ev,f'记得还\n+{num2} ❌\n💰 {num}\n💰❌ {num1}')
 
-@sv.on_rex(r'^还(.*)石$')
+@sv.on_rex(r'^还(.*)石$')     #这里代码不用动了
 async def jie(bot,ev:CQEvent):
     ck = chouka()
     uid = ev.user_id
@@ -204,7 +203,7 @@ async def bank():
         num3 = num2 - num1
         ck._set_shitou(0,4,num3)
         ck._set_shitou(0,5,0)
-        num3 = num3 * 0.0000000088
+        num3 = num3 * 0.0000000088  #为毛那么小，银行看不惯玩家赚钱
         num3 = round(num3,5)
         ck._set_shitou(0,3,num3)
 
@@ -213,11 +212,12 @@ async def bank():
         num3 = num1 - num2
         ck._set_shitou(0,5,num3)
         ck._set_shitou(0,4,0)
-        num3 = num3 *0.0000232
+        num3 = num3 *0.0000232  #为毛那么大，银行喜欢欠钱的玩家
         num3 = round(num3,5)
         ck._set_shitou(0,2,num3)
         
-
+#下面为每日利息结算完成后响应到玩家账户的代码
+#（哦吼，我记得曾经测试的时候，数值调错了导致某玩家拥有千亿资产，现在汇率改的超低应该不会再出这种问题了）
     uid_list_cun = ck._get_uid_list(1)
     uid_list_dai = ck._get_uid_list(2)
     for a in range(len(uid_list_cun)):
