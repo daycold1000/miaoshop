@@ -92,45 +92,45 @@ async def bank(bot,ev:CQEvent):
     
     msg = f'ようこそ銀行\n有 {num1}石💰'
     if num2 !=0:
-        msg += f'(+{num2}✔️)'
+        msg += f'(+{num2}✔️)'    #今日银行比昨日盈利的值
     if num3 !=0:
-        msg += f'(-{num3}❌)'
-    msg += f'({num5}%✔️)({num4}%❌)\n使用可能なコマンド:\n<[存][借][还][取][数量]石>'
-    await bot.send(ev,msg)
+        msg += f'(-{num3}❌)'    #今日银行比昨日亏损的值
+    msg += f'({num5}%✔️)({num4}%❌)\n使用可能なコマンド:\n<[存][借][还][取][数量]石>' 
+    await bot.send(ev,msg)  #盈利率和亏损率展示，影响玩家在银行中存储（或借取）石头的利息结算 
 
 @sv.on_rex(r'^存(.*)石$')
 async def cun(bot,ev:CQEvent):
     ck = chouka()
     uid = ev.user_id
-    num = ck._get_shitou(0,uid)
+    num = ck._get_shitou(0,uid) #获取玩家在存入前持有的喵喵石头数量
     match = (ev['match'])
-    num2 = int(match.group(1))
+    num2 = int(match.group(1))  #获取玩家需要存入喵喵石头的数量
     if num2 > num:
         await bot.finish(ev,'你没那么多',at_sender=True)
-    ck._reduce_shitou(0,uid,num2)
-    ck._add_shitou(1,uid,num2)
-    ck._add_shitou(0,0,num2)
-    num1 = ck._get_shitou(1,uid)
-    num = ck._get_shitou(0,uid)
+    ck._reduce_shitou(0,uid,num2)   #扣除玩家的喵喵石头
+    ck._add_shitou(1,uid,num2)  #增加玩家在银行存入的喵喵石头
+    ck._add_shitou(0,0,num2)    #增加银行的喵喵石头
+    num1 = ck._get_shitou(1,uid)    #获取玩家在银行已经存入的喵喵石头数量
+    num = ck._get_shitou(0,uid) #获取玩家现在持有的喵喵石头数量
     await bot.send(ev,f'好了\n-{num2} ✔️\n💰 {num}\n💰✔️ {num1}')
 
 @sv.on_rex(r'^取(.*)石$')
 async def cun(bot,ev:CQEvent):
     ck = chouka()
     uid = ev.user_id
-    num = ck._get_shitou(0,0)
-    num10 = ck._get_shitou(1,uid)
+    num = ck._get_shitou(0,0)   #获取银行在玩家取出前持有的喵喵石头数量
+    num10 = ck._get_shitou(1,uid)   #获取玩家取出前在银行存入的喵喵石头数量
     match = (ev['match'])
-    num2 = int(match.group(1))
+    num2 = int(match.group(1))  #获取玩家要取出多少喵喵石头
     if num2 > num:
-        await bot.finish(ev,'bank low money!',at_sender=True)
+        await bot.finish(ev,'bank low money!',at_sender=True)   #银行没钱了QAQ
     if num10 < num2:
-        await bot.finish(ev,'你没存那么多',at_sender=True)
-    ck._reduce_shitou(0,0,num2)
-    ck._add_shitou(0,uid,num2)
-    ck._reduce_shitou(1,uid,num2)
-    num1 = ck._get_shitou(1,uid)
-    num = ck._get_shitou(0,uid)
+        await bot.finish(ev,'你没存那么多',at_sender=True)    
+    ck._reduce_shitou(0,0,num2) #扣除银行的喵喵石头
+    ck._add_shitou(0,uid,num2)  #添加玩家的喵喵石头  
+    ck._reduce_shitou(1,uid,num2)   #扣除玩家在银行存入的喵喵石头
+    num1 = ck._get_shitou(1,uid)    #获取玩家在银行已经存入的喵喵石头数量
+    num = ck._get_shitou(0,uid)     #获取玩家现在持有的喵喵石头数量
     await bot.send(ev,f'好了\n+{num2}\n💰 {num}\n💰✔️ {num1}')
 
 @sv.on_rex(r'^借(.*)石$')
@@ -144,10 +144,10 @@ async def jie(bot,ev:CQEvent):
         await bot.finish(ev,'bank low money!',at_sender=True)
     cun = ck._get_shitou(1,uid)
     jie = ck._get_shitou(2,uid)
-    xz_num = cun / 100
+    xz_num = 1500       #这里控制玩家可借取石头的总数
     xz_num = round(xz_num,0)
     if xz_num < jie or num2 > xz_num:
-        await bot.finish(ev,'不要借的太多...人...人家怕你还不上嘛！除非，你多存点石头！')
+        await bot.finish(ev,'不要借的太多...人...人家怕你还不上嘛！')
     ck._reduce_shitou(0,0,num2)
     ck._add_shitou(0,uid,num2)
     ck._add_shitou(2,uid,num2)
