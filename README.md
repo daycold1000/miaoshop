@@ -2,7 +2,7 @@
 注意：功能只适用于HoshinoBot，并未在NoneBot和NoneBot2中进行测试！
 
 ## 简介
-这是一个附属功能，其中包含了商店购买、银行存取借还、签到功能，购买的道具可以使用于猜数字、csgo开箱等娱乐功能
+这是一个附属功能，其中包含了商店购买、银行存取借还、签到功能，购买的道具可以使用于[猜数字](https://github.com/daycold1000/caishuzi)、[csgo开箱](https://github.com/daycold1000/csgo-nb)等娱乐功能
 
 ## 指令
 签到 （就是签到）
