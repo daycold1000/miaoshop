@@ -40,6 +40,10 @@ git clone https://github.com/daycold1000/miaoshop
 
 然后重启 HoshinoBot
 
+3.补货：
+
+默认设置为凌晨5点自动补货
+
 ## 多余的代码
 功能是以我的机器人为主编写的，一些代码为旧版本更新后失效所保留下来的代码
 
