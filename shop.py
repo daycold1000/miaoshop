@@ -19,6 +19,7 @@ from nonebot import on_command, on_request
 from hoshino import sucmd
 from nonebot import get_bot
 from hoshino.typing import NoticeSession
+import hoshino
 
 DB_PATH = os.path.expanduser('~/.q2bot/chouka.db')
 DB_PATH2 = os.path.expanduser('~/.q2bot/shop.db')
@@ -646,7 +647,7 @@ async def buy(bot, ev: CQEvent):
 @sv.scheduled_job('cron', hour ='5',)   #每天5点准时补货
 async def clock():
     shop = shangdian()
-    shopnew = shopnew()
+    cs = shopnew()
     add1 = random.randint(1,7)
     add2 = random.randint(2,8)
     #add3 = random.randint(2,5)
@@ -656,12 +657,30 @@ async def clock():
     #shop._add_jishu(1,3,add3)
     shop._add_jishu(1,4,add4)
     #下面是csgo那几个东西的进货，也是在2022年12月3日传github时加的...
-    shopnew._add_sysnum(0,1,100000001000,add2)
-    shopnew._add_sysnum(0,1,100000001001,add1)
-    shopnew._add_sysnum(0,1,100000001002,add1)
+    cs._add_sysnum(0,1,100000001000,add2)
+    cs._add_sysnum(0,1,100000001001,add1)
+    cs._add_sysnum(0,1,100000001002,add1)
     print('==============商店补货完成！================')
 
-
+@sv.on_fullmatch(('强制补货'))
+async def gacha_cangku(bot, ev: CQEvent):
+    shop = shangdian()
+    cs = shopnew()
+    uid = ev.user_id
+    gid = ev.group_id
+    if priv.check_priv(ev, priv.SUPERUSER):
+        add1 = random.randint(1,7)
+        add2 = random.randint(2,8)
+        add4 = random.randint(1,2)
+        shop._add_jishu(1,1,add1)
+        shop._add_jishu(1,2,add2)
+        shop._add_jishu(1,4,add4)
+        cs._add_sysnum(0,1,100000001000,add2)
+        cs._add_sysnum(0,1,100000001001,add1)
+        cs._add_sysnum(0,1,100000001002,add1)
+        print('==============强制补货完成！================')
+    else:
+        hoshino.logger.error(f'警告！群：{gid} QQ：{uid}正在尝试使用强制补货指令！！！')
 
 @sv.on_fullmatch(('我的背包'))
 async def gacha_cangku(bot, ev: CQEvent):
