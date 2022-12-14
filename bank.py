@@ -238,5 +238,5 @@ async def bank():
             num10 = round(num10,0)
             ck._add_shitou(2,uid,num10)    
 
-
+    print('==============银行利息结算已完成==============')
 
